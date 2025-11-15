@@ -1,0 +1,153 @@
+{
+	"info": {
+		"_postman_id": "522a4824-5332-4237-bf90-b4c88b1d77c8",
+		"name": "wheater api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6962261",
+		"_collection_link": "https://martian-crescent-321200.postman.co/workspace/primeira-API~f314f249-09bc-4a6a-92b1-1ae9f558b6d4/collection/6962261-522a4824-5332-4237-bf90-b4c88b1d77c8?action=share&source=collection_link&creator=6962261"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "londres",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 1) Status code\r",
+							"pm.test(\"Status code é 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 2) Resposta é JSON válido\r",
+							"let jsonData;\r",
+							"pm.test(\"Resposta é JSON válida\", function () {\r",
+							"    jsonData = pm.response.json();\r",
+							"});\r",
+							"\r",
+							"// 3) Tem campo 'name' (cidade)\r",
+							"pm.test(\"Resposta tem campo name (cidade)\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"name\");\r",
+							"});\r",
+							"\r",
+							"// 4) Cidade retornada é London\r",
+							"pm.test(\"Cidade retornada é London\", function () {\r",
+							"    pm.expect(jsonData.name).to.eql(\"London\");\r",
+							"});\r",
+							"\r",
+							"// 5) Tem temperatura em main.temp\r",
+							"pm.test(\"Resposta tem main.temp\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"main\");\r",
+							"    pm.expect(jsonData.main).to.have.property(\"temp\");\r",
+							"});\r",
+							"\r",
+							"// 6) Guardar temperatura em variável de ambiente (pra brincar depois)\r",
+							"pm.environment.set(\"last_temp_london\", jsonData.main.temp);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/weather?q={{city}}&lang={{lang}}&units={{units}}&appid={{api_key}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{city}}"
+						},
+						{
+							"key": "lang",
+							"value": "{{lang}}"
+						},
+						{
+							"key": "units",
+							"value": "{{units}}"
+						},
+						{
+							"key": "appid",
+							"value": "{{api_key}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
+{
+	"id": "a0fcd83b-2fff-42b9-817b-cdd57629f61c",
+	"name": "Openweather - Local",
+	"values": [
+		{
+			"key": "last_temp_london",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "api_key",
+			"value": "",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "base_url",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "city",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "lang",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "units",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2025-11-15T19:04:37.049Z",
+	"_postman_exported_using": "Postman/11.71.7"
+}
