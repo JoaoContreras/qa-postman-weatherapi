@@ -1,11 +1,4 @@
-Projeto simples usando **Postman** para consumir a API de clima e mostrar:
-
-- uso de **variáveis de ambiente**
-- **parâmetros de query**
-- **scripts de teste** em JavaScript
-- gravação de valores da resposta em variáveis (`pm.environment.set`)
-
----
+Projeto usando **Postman** para consumir a API de clima e mostrar:
 
 ## Endpoints usados
 
