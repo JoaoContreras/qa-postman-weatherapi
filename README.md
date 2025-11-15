@@ -1,67 +1,71 @@
-# qa-postman-weatherapi
-Portfólio de testes de API com Postman usando a WeatherAPI (GET e testes automatizados com environments)
+Projeto simples usando **Postman** para consumir a API de clima e mostrar:
 
-Projeto simples usando **Postman**
+- uso de **variáveis de ambiente**
+- **parâmetros de query**
+- **scripts de teste** em JavaScript
+- gravação de valores da resposta em variáveis (`pm.environment.set`)
+
+---
 
 ## Endpoints usados
 
 Todos os endpoints são baseados em:
 
-- `https://api.weatherapi.com/v1`
+- `https://api.openweathermap.org/data/2.5`
 
 Neste projeto a collection contém:
 
-1. **Current Weather (tempo atual)**
-   - `GET /current.json?key={{api_key}}&q={{city}}`
-   - Usa variáveis de ambiente `api_key` e `city`
-   - Testes:
-     - Status code = 200
-     - Resposta contém `location.name`
-     - Resposta contém `current.temp_c`
+1. **Clima atual (weather) – cidade fixa**
+   - `GET /weather?q={{city}}&lang={{lang}}&units={{units}}&appid={{api_key}}`
+   - Usa variáveis de ambiente:
+     - `base_url`
+     - `city`
+     - `lang`
+     - `units`
+     - `api_key`
+   - Exemplo com `city = London`, `lang = pt_br`, `units = metric`
 
-2. **Forecast 3 dias (previsão)**
-   - `GET /forecast.json?key={{api_key}}&q={{city}}&days=3&aqi=no&alerts=no`
-   - Testes:
-     - Status code = 200
-     - Resposta contém `forecast.forecastday`
-     - Garante que existem pelo menos 3 dias de previsão
+### Testes automatizados no Postman
 
-3. **Search City (autocomplete)**
-   - `GET /search.json?key={{api_key}}&q={{search_query}}`
-   - Testes:
-     - Status code = 200
-     - Resposta é um array
-     - Primeiro item tem `name` e `country`
+Na aba de scripts pós-resposta, os testes verificam:
 
-## Como rodar
+- `Status code = 200`
+- Resposta é um JSON válido
+- Resposta contém o campo `name` (nome da cidade)
+- A cidade retornada é `London`
+- Resposta contém `main.temp` (temperatura)
+- A temperatura é armazenada em uma variável de ambiente:
+  - `last_temp_london`
 
-### 1. Criar conta e pegar API key
+Exemplo de script de teste:
 
-1. Acesse [https://www.weatherapi.com/](https://www.weatherapi.com/)
-2. Crie uma conta gratuita
-3. Copie sua **API key**
+```javascript
+// 1) Status code
+pm.test("Status code é 200", function () {
+    pm.response.to.have.status(200);
+});
 
-4. ### 2. Importar Environment e Collection no Postman
+// 2) Resposta é JSON válida
+let jsonData;
+pm.test("Resposta é JSON válida", function () {
+    jsonData = pm.response.json();
+});
 
-1. Abra o Postman
-2. Vá em **Environments > Import** e selecione:
-   - `environments/weatherapi-local.postman_environment.json`
-3. Vá em **Collections > Import** e selecione:
-   - `collections/weatherapi-postman-collection.json`
-4. No Postman, selecione o environment **WeatherAPI – Local**
-5. Edite a variável `api_key` no ambiente e coloque a sua chave real (localmente, não no Git)
+// 3) Tem campo 'name' (cidade)
+pm.test("Resposta tem campo name (cidade)", function () {
+    pm.expect(jsonData).to.have.property("name");
+});
 
-### 3. Executar os testes
+// 4) Cidade retornada é London
+pm.test("Cidade retornada é London", function () {
+    pm.expect(jsonData.name).to.eql("London");
+});
 
-1. Abra a collection **WeatherAPI – Portfolio**
-2. Escolha uma request (ex.: **01 – Current Weather**)
-3. Clique em **Send**
-4. Vá até a aba **Tests** (abaixo da resposta) e confira os resultados dos testes
+// 5) Tem temperatura em main.temp
+pm.test("Resposta tem main.temp", function () {
+    pm.expect(jsonData).to.have.property("main");
+    pm.expect(jsonData.main).to.have.property("temp");
+});
 
-Você também pode usar o **Runner** do Postman para executar a collection inteira e ver todos os testes passando de uma vez.
-
-## Tecnologias / Ferramentas
-
-- Postman (requisições HTTP e testes)
-- WeatherAPI (dados de clima)
-- JSON (requests e responses)
+// 6) Guardar temperatura em variável de ambiente
+pm.environment.set("last_temp_london", jsonData.main.temp);
